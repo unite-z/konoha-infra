@@ -34,7 +34,7 @@ services:
       start_period: 120s
 
   uat-db:
-    image: postgis/postgis:16-3.4
+    image: postgis/postgis:16-3.5
     restart: unless-stopped
     env_file:
       - ${KONOHA_DIR:-/opt/konoha}/uat/db.env
