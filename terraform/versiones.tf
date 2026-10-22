@@ -8,14 +8,15 @@ terraform {
     }
   }
 
-  # Estado remoto en S3, en la misma cuenta del lab. Se activa tras crear el bucket de estado
-  # a mano (ver docs/runbooks/arrancar-lab.md). Mientras tanto, el estado es local y no se versiona.
-  # backend "s3" {
-  #   bucket       = "konoha-tfstate-<sufijo>"
-  #   key          = "konoha/terraform.tfstate"
-  #   region       = "us-east-1"
-  #   use_lockfile = true
-  # }
+  # Estado remoto en S3, en la misma cuenta del lab, con bloqueo por fichero (use_lockfile).
+  # El bucket se crea con scripts/crear-bucket-estado.sh y se pasa al iniciar:
+  #   terraform init -backend-config="bucket=konoha-tfstate-<sufijo>"
+  backend "s3" {
+    key          = "konoha/terraform.tfstate"
+    region       = "us-east-1"
+    encrypt      = true
+    use_lockfile = true
+  }
 }
 
 provider "aws" {
