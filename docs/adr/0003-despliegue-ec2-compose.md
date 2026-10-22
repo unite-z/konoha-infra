@@ -39,6 +39,21 @@
   - `promover-prod.yml` (manual): lleva a prod la misma imagen probada en UAT, con `pg_dump` previo, verificación de digest, smoke test y vuelta atrás.
 - Terraform aplicado en local. CI no tiene credenciales de AWS: despliega por SSH.
 
+## Comprobado en el lab (2026-10-22)
+
+Verificado con `--dry-run` y lecturas, sin crear recursos:
+
+| Comprobación | Resultado |
+|---|---|
+| `LabInstanceProfile` | Existe y lleva `LabRole` |
+| `run-instances` t3.small, t3.medium y t3.large con `LabInstanceProfile` en `us-east-1` | Permitido |
+| IP elástica (`allocate-address`) en `us-east-1` y `us-west-2` | Permitido |
+| AMI | Ubuntu 24.04, que Terraform resuelve con el parámetro público de SSM, sin fijar el ID |
+| SES | `AccessDenied`. Las alertas van solo dentro de la aplicación |
+| Pricing API | `AccessDenied`. Los precios se confirman en la calculadora web de AWS |
+
+Queda por confirmar el presupuesto de crédito del lab.
+
 ## Alternativas descartadas
 
 - ECS, RDS o ALB: caros para el crédito del lab y chocan con las restricciones de IAM.
