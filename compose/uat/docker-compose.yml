@@ -1,0 +1,63 @@
+# Stack de uat: web, api y base de datos. Lo levanta scripts/deploy.sh, nunca a mano.
+# Versiones (REGISTRO_IMAGENES, API_SHA, WEB_SHA) en ${KONOHA_DIR}/uat/version.env.
+name: konoha-uat
+
+services:
+  uat-web:
+    image: ${REGISTRO_IMAGENES:?Falta REGISTRO_IMAGENES}/konoha-web:${WEB_SHA:?Falta WEB_SHA}
+    restart: unless-stopped
+    networks: [konoha-edge]
+    mem_limit: 64m
+
+  uat-api:
+    image: ${REGISTRO_IMAGENES:?Falta REGISTRO_IMAGENES}/konoha-api:${API_SHA:?Falta API_SHA}
+    restart: unless-stopped
+    env_file:
+      - ${KONOHA_DIR:-/opt/konoha}/uat/api.env
+    environment:
+      MOD05_DB_URL: jdbc:postgresql://uat-db:5432/konoha
+      MOD05_DB_USER: konoha
+      S3_PREFIX: uat/
+      ENTORNO: uat
+    depends_on:
+      uat-db:
+        condition: service_healthy
+    networks: [konoha-edge, interna]
+    mem_limit: 640m
+    volumes:
+      - archivos:/app/private-media
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 120s
+
+  uat-db:
+    image: postgis/postgis:16-3.4
+    restart: unless-stopped
+    env_file:
+      - ${KONOHA_DIR:-/opt/konoha}/uat/db.env
+    environment:
+      POSTGRES_DB: konoha
+      POSTGRES_USER: konoha
+    command: ["postgres", "-c", "shared_buffers=96MB", "-c", "max_connections=40"]
+    networks: [interna]
+    mem_limit: 384m
+    volumes:
+      - datos:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U konoha -d konoha"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  datos:
+  # Archivos en disco mientras el almacenamiento no pase a S3 (docs/estandares/almacenamiento.md del backend).
+  archivos:
+
+networks:
+  konoha-edge:
+    external: true
+  interna:

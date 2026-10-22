@@ -1,0 +1,6 @@
+# Copia como terraform.tfvars (ignorado por git) y completa.
+clave_publica_deploy = "ssh-ed25519 AAAA... deploy-konoha"
+nombre_bucket        = "konoha-archivos-<sufijo-unico>"
+origenes_cors        = []
+# Tras el primer apply, con la IP elástica:
+# origenes_cors = ["https://uat.1-2-3-4.sslip.io", "https://app.1-2-3-4.sslip.io"]

@@ -1,0 +1,28 @@
+# Caddy de borde: termina HTTPS (Let's Encrypt, dominios sslip.io) y enruta por host a cada entorno.
+name: konoha-edge
+
+services:
+  edge:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMINIO_UAT: ${DOMINIO_UAT:?Falta DOMINIO_UAT}
+      DOMINIO_PROD: ${DOMINIO_PROD:?Falta DOMINIO_PROD}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - edge-datos:/data
+      - edge-config:/config
+    networks:
+      - konoha-edge
+    mem_limit: 128m
+
+volumes:
+  edge-datos:
+  edge-config:
+
+networks:
+  konoha-edge:
+    external: true

@@ -12,12 +12,11 @@ Repos hermanos: `konoha-backend` (Spring Boot) y `konoha-frontend` (React PWA).
 | `terraform/cloud-init.yml` | Preparación del host: Docker, swap, rotación de logs, usuario `deploy` y cron |
 | `compose/edge/` | Caddy de borde: HTTPS y enrutado por host |
 | `compose/uat/`, `compose/prod/` | Stack de cada entorno: `*-web`, `*-api` y `*-db` |
-| `scripts/` | `deploy.sh`, `volver-atras.sh`, `backup.sh`, `restaurar-backup.sh`, `verificar-digest.sh` y `smoke-test.sh` |
-| `entornos/` | Qué SHA de api y de web corre en cada entorno. Lo actualizan los workflows |
+| `scripts/` | `deploy.sh`, `volver-atras.sh`, `backup.sh`, `restaurar-backup.sh`, `verificar-digest.sh`, `smoke-test.sh` y `levantar-edge.sh`. En el host viven en `/opt/konoha/infra/scripts/` |
 | `docs/estandares/` | Normas comunes: nombres, git y PR, seguridad |
 | `docs/adr/` | Registro único de decisiones |
 | `docs/runbooks/` | Procedimientos: arrancar el lab, desplegar, volver atrás, restaurar y transferir |
-| `.github/workflows/` | `terraform-ci.yml`, `promover-prod.yml` y `limpiar-imagenes.yml` |
+| `.github/workflows/` | `ci.yml` (higiene, Terraform, Compose y shellcheck), `promover-prod.yml` y `sincronizar-host.yml` |
 
 ## Comandos
 
@@ -26,7 +25,15 @@ cd terraform
 terraform fmt -check -recursive
 terraform init
 terraform validate
-terraform plan        # requiere las credenciales del Learner Lab en ~/.aws/credentials
+tflint --init && tflint
+# plan y apply solo con aprobación: gastan crédito del lab (docs/runbooks/arrancar-lab.md)
+```
+
+Validar Compose en local:
+
+```sh
+REGISTRO_IMAGENES=ghcr.io/ejemplo API_SHA=0 WEB_SHA=0 KONOHA_DIR=/tmp/konoha \
+  docker compose -f compose/uat/docker-compose.yml config --quiet
 ```
 
 ## Reglas no negociables

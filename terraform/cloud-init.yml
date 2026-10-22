@@ -1,0 +1,50 @@
+#cloud-config
+# Preparación del host (Ubuntu 24.04). Plantilla de Terraform: $${...} es un literal para el shell.
+
+timezone: America/Lima
+package_update: true
+packages:
+  - docker.io
+  - docker-compose-v2
+  - curl
+  - jq
+  - rsync
+
+users:
+  - default
+  - name: deploy
+    shell: /bin/bash
+    groups: [docker]
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ${clave_publica_deploy}
+
+write_files:
+  # Rotación de logs de los contenedores: sin esto el disco se llena en semanas.
+  - path: /etc/docker/daemon.json
+    content: |
+      {
+        "log-driver": "json-file",
+        "log-opts": { "max-size": "10m", "max-file": "3" }
+      }
+  # Datos del host que no son secretos. Los secretos se añaden al desplegar (docs/runbooks/desplegar.md).
+  - path: /opt/konoha/host.env
+    permissions: "0600"
+    content: |
+      BUCKET=${nombre_bucket}
+      AWS_REGION=${region}
+  # Backups diarios y al arrancar (el lab apaga la máquina: el cron de madrugada casi nunca correría).
+  - path: /etc/cron.d/konoha
+    content: |
+      SHELL=/bin/bash
+      @reboot deploy sleep 600 && /opt/konoha/infra/scripts/backup.sh prod && /opt/konoha/infra/scripts/backup.sh uat
+      0 13 * * * deploy /opt/konoha/infra/scripts/backup.sh prod && /opt/konoha/infra/scripts/backup.sh uat
+      30 13 * * 0 deploy docker image prune -af --filter "until=168h" >/dev/null
+
+runcmd:
+  # Swap de 2 GB: UAT y prod comparten 4 GB (ADR 0003).
+  - [sh, -c, "fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile && echo '/swapfile none swap sw 0 0' >> /etc/fstab"]
+  - [sh, -c, "mkdir -p /opt/konoha/infra /opt/konoha/uat /opt/konoha/prod /opt/konoha/edge && chown -R deploy:deploy /opt/konoha"]
+  - [sh, -c, "docker network inspect konoha-edge >/dev/null 2>&1 || docker network create konoha-edge"]
+  - [systemctl, restart, docker]
+  - [systemctl, enable, docker]

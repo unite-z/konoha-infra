@@ -18,13 +18,14 @@
 
 | Secreto | Dónde | Notas |
 |---|---|---|
-| `DB_PASSWORD` | `.env` de cada stack | Distinta en UAT y prod |
+| `MOD05_DB_PASSWORD` y `POSTGRES_PASSWORD` | `api.env` y `db.env` de cada entorno en el host | Distinta en UAT y prod |
 | `GEMINI_API_KEY` | `.env` del backend | Una clave por entorno, con cuota propia en UAT |
-| `GHCR_TOKEN_LECTURA` | `.env` del host | Token de GitHub de solo lectura de paquetes, para el `docker pull` de la EC2 |
-| `SSH_KEY_DEPLOY` | Secret de Actions | Clave del usuario `deploy` de la EC2, sin sudo general |
+| `GHCR_TOKEN_LECTURA` | `/opt/konoha/host.env` | Token de GitHub de solo lectura de paquetes, para el `docker pull` de la EC2 |
+| `SSH_KEY_DEPLOY` | Secret de Actions | Clave del usuario `deploy` de la EC2, sin sudo. Está en el grupo `docker`, que equivale a root en el host: trátala como una credencial de administración |
+| `SSH_KNOWN_HOSTS` | Secret de Actions | Huella del host, para que SSH no acepte un servidor suplantado |
 | `DEPLOY_WEBHOOK_URL` | Secret de Actions | Webhook de Discord para avisar de fallos. Si falta, el aviso se salta |
 
-Los secretos se rotan al final de cada entrega y siempre que alguien deje el equipo.
+Los secretos se rotan al final de cada entrega y siempre que alguien deje el equipo: `docs/runbooks/rotar-secretos.md`.
 
 ## Autenticación y permisos
 

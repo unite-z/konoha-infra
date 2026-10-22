@@ -1,0 +1,109 @@
+name: promover-prod
+
+# Lleva a prod una versión de api y web que ya ha pasado por UAT, sin construir nada.
+# deploy.sh hace pg_dump a S3, levanta, verifica el digest y el smoke test, y vuelve atrás si algo falla.
+# Cada promoción queda registrada como deployment del entorno prod (pestaña Environments de este repo).
+on:
+  workflow_dispatch:
+    inputs:
+      api_sha:
+        description: SHA completo de konoha-api. Vacío = el que corre hoy en UAT.
+        required: false
+        default: ''
+      web_sha:
+        description: SHA completo de konoha-web. Vacío = el que corre hoy en UAT.
+        required: false
+        default: ''
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  promover:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      HOST: ${{ vars.SSH_HOST }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ENLACE: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: clave SSH
+        env:
+          SSH_KEY_DEPLOY: ${{ secrets.SSH_KEY_DEPLOY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY_DEPLOY" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          if ! ssh -o ConnectTimeout=15 "deploy@$HOST" true; then
+            echo "::error::La EC2 no responde por SSH. ¿Está arrancado el Learner Lab?"
+            exit 1
+          fi
+
+      - name: versiones a promover
+        id: versiones
+        env:
+          API_SHA: ${{ inputs.api_sha }}
+          WEB_SHA: ${{ inputs.web_sha }}
+        run: |
+          uat="$(ssh "deploy@$HOST" cat /opt/konoha/uat/version.env)"
+          [[ -n "$API_SHA" ]] || API_SHA="$(grep '^API_SHA=' <<< "$uat" | cut -d= -f2)"
+          [[ -n "$WEB_SHA" ]] || WEB_SHA="$(grep '^WEB_SHA=' <<< "$uat" | cut -d= -f2)"
+          for sha in "$API_SHA" "$WEB_SHA"; do
+            [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::'$sha' no es un SHA completo."; exit 1; }
+          done
+          # Solo se promueve lo que ha pasado por UAT con éxito.
+          if ! ssh "deploy@$HOST" grep -q "api=$API_SHA web=$WEB_SHA" /opt/konoha/uat/historial; then
+            echo "::error::La combinación api=$API_SHA web=$WEB_SHA no se ha desplegado con éxito en UAT."
+            exit 1
+          fi
+          echo "api=$API_SHA" >> "$GITHUB_OUTPUT"
+          echo "web=$WEB_SHA" >> "$GITHUB_OUTPUT"
+          echo "Promoción a prod: api=$API_SHA web=$WEB_SHA" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: registrar el deployment
+        id: deployment
+        env:
+          API_SHA: ${{ steps.versiones.outputs.api }}
+          WEB_SHA: ${{ steps.versiones.outputs.web }}
+        run: |
+          id="$(jq -n \
+            --arg ref "$GITHUB_SHA" --arg api "$API_SHA" --arg web "$WEB_SHA" \
+            --arg actor "$GITHUB_ACTOR" --arg fecha "$(date -Iseconds)" \
+            '{ref: $ref, environment: "prod", auto_merge: false, required_contexts: [],
+              description: "Promoción desde UAT",
+              payload: {api_sha: $api, web_sha: $web, lanzado_por: $actor, fecha: $fecha}}' \
+            | gh api -X POST "repos/$GITHUB_REPOSITORY/deployments" --input - --jq .id)"
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+          gh api -X POST "repos/$GITHUB_REPOSITORY/deployments/$id/statuses" \
+            -f state=in_progress -f log_url="$ENLACE" >/dev/null
+
+      - name: desplegar en prod
+        env:
+          API_SHA: ${{ steps.versiones.outputs.api }}
+          WEB_SHA: ${{ steps.versiones.outputs.web }}
+        run: ssh "deploy@$HOST" "/opt/konoha/infra/scripts/deploy.sh prod ambos $API_SHA $WEB_SHA"
+
+      - name: estado del deployment
+        if: always() && steps.deployment.outputs.id != ''
+        env:
+          ID: ${{ steps.deployment.outputs.id }}
+          ESTADO: ${{ job.status == 'success' && 'success' || 'failure' }}
+          URL_PROD: ${{ vars.URL_PROD }}
+        run: |
+          gh api -X POST "repos/$GITHUB_REPOSITORY/deployments/$ID/statuses" \
+            -f state="$ESTADO" -f log_url="$ENLACE" -f environment_url="$URL_PROD" >/dev/null
+
+      - name: aviso de fallo
+        if: failure()
+        env:
+          DEPLOY_WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL }}
+        run: |
+          [[ -n "$DEPLOY_WEBHOOK_URL" ]] || { echo "Sin DEPLOY_WEBHOOK_URL: no se avisa."; exit 0; }
+          jq -n --arg c "promover-prod ha fallado. $ENLACE" '{content: $c}' \
+            | curl -fsS -m 10 -H 'Content-Type: application/json' -d @- "$DEPLOY_WEBHOOK_URL"
