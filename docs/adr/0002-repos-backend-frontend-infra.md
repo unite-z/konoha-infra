@@ -11,6 +11,7 @@ La organización del curso ya tiene creados `konoha-backend`, `konoha-frontend` 
 ## Decisión
 
 - Tres repositorios con esos nombres, privados en una cuenta personal mientras tanto, y transferidos a la organización cuando haya acceso (ver `docs/runbooks/transferir-a-la-organizacion.md`).
+- Actualización del 22-10-2026: transferidos a `unite-z` y hechos públicos, porque en el plan gratuito de la organización los repos privados pierden las reglas de `main` y los environments.
 - El borrador se separa por carpeta conservando el historial y la autoría (`git filter-repo`).
 - `konoha-backend` y `konoha-frontend` publican su imagen por SHA en GHCR (`konoha-api` y `konoha-web`) y despliegan en UAT al fusionar en `main`.
 - `konoha-infra` contiene Terraform, Compose, scripts, runbooks, los estándares transversales y este registro de ADR. También la promoción a prod (`promover-prod.yml`).

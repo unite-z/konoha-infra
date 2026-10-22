@@ -1,5 +1,7 @@
 # Transferir los repos a la organización
 
+> Hecho el 22-10-2026: los tres repos están en `unite-z`, públicos, y UAT corre imágenes de `ghcr.io/unite-z`. Se conserva como referencia.
+
 Los tres repos nacen privados en la cuenta personal de Marcos y se mueven a la organización del curso (`unite-z`) cuando haya acceso. Transferir conserva el historial, los issues, los PR y los colaboradores.
 
 ## Requisitos previos
