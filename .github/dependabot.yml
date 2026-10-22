@@ -13,8 +13,18 @@ updates:
     schedule:
       interval: weekly
       day: monday
+    ignore:
+      # Las versiones mayores se hacen a mano, en su propio ticket: el CI en verde no basta
+      # (p. ej. PostGIS 16 a 17 no arranca sobre los datos existentes).
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: docker-compose
     directories: ["/compose/*"]
     schedule:
       interval: weekly
       day: monday
+    ignore:
+      # Las versiones mayores se hacen a mano, en su propio ticket: el CI en verde no basta
+      # (p. ej. PostGIS 16 a 17 no arranca sobre los datos existentes).
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
