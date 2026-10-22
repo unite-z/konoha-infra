@@ -14,3 +14,6 @@ crash.log
 .env
 *.env
 !*.env.example
+
+# Herramientas descargadas por CI
+.bin/
