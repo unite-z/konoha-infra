@@ -20,4 +20,4 @@ Cuando la decisión es cara de deshacer o afecta a más de un módulo: stack, fo
 | [0002](0002-repos-backend-frontend-infra.md) | Tres repositorios: backend, frontend e infra | aceptado |
 | [0003](0003-despliegue-ec2-compose.md) | Despliegue en una EC2 con Docker Compose | aceptado |
 | [0004](0004-formato-errores-problemdetail.md) | Formato de errores con ProblemDetail | propuesto |
-| [0005](0005-claves-json-camelcase.md) | Claves JSON de la API en camelCase | aceptado |
+| [0005](0005-claves-json-snake-case.md) | Claves JSON de la API en snake_case | aceptado |

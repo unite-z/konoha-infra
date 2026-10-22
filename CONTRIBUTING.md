@@ -4,7 +4,7 @@ Vale para los tres repos. Cada uno añade en su propio `CONTRIBUTING.md` lo que 
 
 ## Antes de empezar
 
-1. Ten un issue en Linear asignado (ID provisional `AV-<n>`).
+1. Ten un issue en Linear asignado (`AV-<n>`).
 2. Instala los hooks del repo, una vez por clon:
 
    ```sh

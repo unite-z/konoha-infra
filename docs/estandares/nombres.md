@@ -34,12 +34,12 @@ Las impone el lenguaje o la herramienta. Fuera de esta lista no hay más.
 | Constantes Java | MAYÚSCULAS con guion bajo | `TAMANO_PAGINA` |
 | Componentes React y su CSS | PascalCase | `BarraAvance.tsx`, `BarraAvance.module.css` |
 | Carpeta de un componente con varios ficheros | PascalCase | `layouts/LayoutOficina/` |
-| Ficheros TS que no son componentes | camelCase, como ya hace el repo | `clienteTercerizados.ts`, `useConsulta.ts` |
+| Ficheros TS que no son componentes | camelCase, como ya hace el repo (`mi-util.ts` no vale) | `clienteTercerizados.ts`, `useConsulta.ts` |
 | Ficheros de entrada fijados por la herramienta | los de la herramienta | `main.tsx`, `App.tsx`, `vite.config.ts` |
 | Migraciones Flyway | `V<n>__<modulo>_<descripcion>.sql` | `V2__mod05_agrega_motivo_rechazo.sql` |
 | Tablas y columnas SQL | snake_case con prefijo del módulo dueño (`core_` para MOD-01) | `mod05_atencion_tercerizada`, `core_usuario` |
 | Identificadores de Terraform | snake_case (convención de HCL y tflint) | `aws_instance.app`, `variable "tipo_instancia"` |
-| Claves JSON de la API | camelCase (ver `api.md` del backend) | `fechaInicio` |
+| Claves JSON y parámetros de la API | snake_case (ADR 0005) | `fecha_inicio`, `?area_verde_id=3` |
 | Variables de entorno | SCREAMING_SNAKE_CASE | `S3_PREFIX`, `GEMINI_API_KEY` |
 | Variables y secrets de GitHub Actions | SCREAMING_SNAKE_CASE | `DESPLIEGUE_ACTIVO`, `SSH_HOST` |
 | Ficheros con nombre fijado | el fijado | `README.md`, `AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md`, `SECURITY.md`, `CODEOWNERS`, `Dockerfile`, `.env.example`, `docker-compose.yml` |

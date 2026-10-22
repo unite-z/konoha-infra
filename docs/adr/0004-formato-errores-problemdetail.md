@@ -25,7 +25,7 @@ Formato único para todo el código nuevo: **ProblemDetail (RFC 9457)**, que Spr
   "detail": "La atención ya está finalizada; no admite un nuevo inicio.",
   "instance": "/api/v1/tercerizados/atenciones/18/inicio/",
   "codigo": "transicion-no-permitida",
-  "errores": { "fechaInicio": ["Debe ser anterior a la fecha de fin"] }
+  "errores": { "fecha_inicio": ["Debe ser anterior a la fecha de fin"] }
 }
 ```
 

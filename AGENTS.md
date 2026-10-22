@@ -75,9 +75,11 @@ Cambiarlas exige un ADR nuevo que sustituya al anterior.
 | Alertas solo dentro de la aplicación (SES denegado en el lab) | [ADR 0003](docs/adr/0003-despliegue-ec2-compose.md) |
 | Estado de los entornos en la API de Deployments de GitHub | [ADR 0002](docs/adr/0002-repos-backend-frontend-infra.md) |
 | Flyway con expand/contract y propiedad de entidades por módulo | `konoha-backend`: `docs/estandares/base-datos.md` |
-| Prefijo de tickets `AV` (provisional, en un solo sitio) | [git-y-prs.md](docs/estandares/git-y-prs.md) |
+| Claves JSON y parámetros de la API en snake_case | [ADR 0005](docs/adr/0005-claves-json-snake-case.md) |
+| Ficheros TS que no son componentes en camelCase | [nombres.md](docs/estandares/nombres.md) |
+| Prefijo de tickets `AV`; el primer issue es AV-1 | [git-y-prs.md](docs/estandares/git-y-prs.md) |
 
-Pendientes de decisión: formato de errores (ADR 0004, propuesto), claves JSON (ADR 0005) y nombres de ficheros TS que no son componentes.
+Pendiente de decisión: formato de errores (ADR 0004, propuesto).
 
 ## Seguridad abierta: no empeorar
 

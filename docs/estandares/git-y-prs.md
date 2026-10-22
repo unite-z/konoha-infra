@@ -5,7 +5,7 @@ Aplica a `konoha-backend`, `konoha-frontend` y `konoha-infra`.
 ## Tickets
 
 - Todo trabajo tiene un issue en Linear antes de crear la rama.
-- Prefijo provisional: **`AV`** (`AV-12`). Si cambia, se actualiza aquí y en la variable `PREFIJO_TICKET` de GitHub Actions; nada más lo fija.
+- Prefijo: **`AV`** (`AV-12`). El primer issue, AV-1, es «Estándares, CI y despliegue, Sprint 0». Si cambia, se actualiza aquí y en la variable `PREFIJO_TICKET` de GitHub Actions; nada más lo fija.
 - Poner el ID en la rama y en el título del PR enlaza el PR con el issue de Linear.
 
 ## Ramas
