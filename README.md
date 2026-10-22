@@ -36,4 +36,4 @@ Navegador ─HTTPS─► edge (Caddy) ─┬─ uat.<ip>.sslip.io ─► uat-web
 
 ## Estado de los repos
 
-Por ahora son privados en una cuenta personal. Cuando el equipo tenga acceso a la organización del curso, se transfieren siguiendo [transferir-a-la-organizacion.md](docs/runbooks/transferir-a-la-organizacion.md).
+Están en la organización del curso (`unite-z`) y son públicos: en el plan gratuito, así se aplican las reglas de `main` y los environments, y los minutos de Actions y el almacenamiento de imágenes son ilimitados. Ningún secreto vive en el código (ver `docs/estandares/seguridad-secretos.md`).
