@@ -15,7 +15,7 @@ output "dominio_prod" {
 
 output "bucket" {
   description = "Bucket de archivos y backups."
-  value       = aws_s3_bucket.archivos.bucket
+  value       = var.nombre_bucket
 }
 
 output "ssh_deploy" {

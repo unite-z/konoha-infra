@@ -20,3 +20,6 @@ crash.log
 
 # Notas y planes de trabajo locales (de personas y agentes): nunca se commitean
 .notas/
+
+# Planes de Terraform guardados con -out
+*.tfplan

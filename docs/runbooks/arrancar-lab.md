@@ -46,6 +46,7 @@ Crear recursos gasta crédito del lab: **solo con la aprobación de quien coordi
 ```sh
 cd terraform
 cp terraform.tfvars.example terraform.tfvars   # completa la clave pública de deploy y el nombre del bucket
+../scripts/crear-bucket.sh <nombre_bucket>     # el bucket se crea fuera de Terraform (ver terraform/s3.tf)
 terraform init
 terraform plan -out plan.tfplan
 terraform apply plan.tfplan
@@ -56,6 +57,8 @@ Después:
 
 1. Con la IP elástica, rellena `origenes_cors` en `terraform.tfvars` y vuelve a aplicar.
 2. Sigue `desplegar.md`, «Primera vez».
+
+El bucket no está en el estado de Terraform por una restricción del lab: `terraform destroy` no lo borra, y hay que vaciarlo y borrarlo a mano si alguna vez se quiere eliminar.
 
 El estado de Terraform es local hasta que se active el backend S3 (comentado en `versiones.tf`). No lo borres ni lo subas al repo. Guárdalo también en el almacenamiento del equipo tras cada `apply`.
 

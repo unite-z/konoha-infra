@@ -44,7 +44,7 @@ resource "aws_vpc_security_group_ingress_rule" "ssh" {
 
 resource "aws_vpc_security_group_egress_rule" "todo" {
   security_group_id = aws_security_group.app.id
-  description       = "Salida a internet (GHCR, S3, Gemini, Let's Encrypt)"
+  description       = "Salida a internet (GHCR, S3, Gemini, Lets Encrypt)"
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1"
 }
@@ -60,7 +60,7 @@ resource "aws_instance" "app" {
 
   user_data = templatefile("${path.module}/cloud-init.yml", {
     clave_publica_deploy = var.clave_publica_deploy
-    nombre_bucket        = aws_s3_bucket.archivos.bucket
+    nombre_bucket        = var.nombre_bucket
     region               = var.region
   })
 

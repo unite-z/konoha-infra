@@ -1,15 +1,12 @@
 # Bucket de archivos (prefijos uat/ y prod/) y backups (backups/uat/ y backups/prod/).
-
-resource "aws_s3_bucket" "archivos" {
-  bucket = var.nombre_bucket
-
-  lifecycle {
-    prevent_destroy = true
-  }
-}
+#
+# El bucket se crea fuera de Terraform con scripts/crear-bucket.sh: la política del
+# Learner Lab deniega s3:GetBucketObjectLockConfiguration, que el proveedor de AWS lee
+# siempre que gestiona un aws_s3_bucket. Terraform sí gestiona toda su configuración.
+# Al no estar en el estado, un terraform destroy no puede borrarlo por accidente.
 
 resource "aws_s3_bucket_public_access_block" "archivos" {
-  bucket                  = aws_s3_bucket.archivos.id
+  bucket                  = var.nombre_bucket
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
@@ -17,14 +14,14 @@ resource "aws_s3_bucket_public_access_block" "archivos" {
 }
 
 resource "aws_s3_bucket_versioning" "archivos" {
-  bucket = aws_s3_bucket.archivos.id
+  bucket = var.nombre_bucket
   versioning_configuration {
     status = "Enabled"
   }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "archivos" {
-  bucket = aws_s3_bucket.archivos.id
+  bucket = var.nombre_bucket
   rule {
     apply_server_side_encryption_by_default {
       sse_algorithm = "AES256"
@@ -33,7 +30,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "archivos" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "archivos" {
-  bucket = aws_s3_bucket.archivos.id
+  bucket = var.nombre_bucket
 
   rule {
     id     = "versiones-antiguas"
@@ -61,7 +58,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "archivos" {
 
 resource "aws_s3_bucket_cors_configuration" "archivos" {
   count  = length(var.origenes_cors) > 0 ? 1 : 0
-  bucket = aws_s3_bucket.archivos.id
+  bucket = var.nombre_bucket
 
   cors_rule {
     allowed_methods = ["PUT", "GET"]
