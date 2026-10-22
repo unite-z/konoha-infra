@@ -1,0 +1,22 @@
+# Sistema
+.DS_Store
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+.terraform.lock.hcl.bak
+
+# Entornos
+.env
+*.env
+!*.env.example
+
+# Herramientas descargadas por CI
+.bin/
+
+# Notas y planes de trabajo locales (de personas y agentes): nunca se commitean
+.notas/

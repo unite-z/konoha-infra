@@ -1,0 +1,10 @@
+# Quién revisa qué. Cada ruta necesita al menos dos personas: nadie aprueba su propio PR.
+# La última regla que coincide es la que manda.
+# TODO: sustituir cada @TODO-... por usuarios de GitHub del equipo y descomentar.
+
+# *                        @TODO-coordinacion @TODO-infra
+# /terraform/              @TODO-infra-a @TODO-infra-b
+# /compose/                @TODO-infra-a @TODO-infra-b
+# /scripts/                @TODO-infra-a @TODO-infra-b
+# /docs/estandares/        @TODO-coordinacion @TODO-backend @TODO-frontend
+# /docs/adr/               @TODO-coordinacion @TODO-backend @TODO-frontend

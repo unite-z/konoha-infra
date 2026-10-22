@@ -1,0 +1,30 @@
+# Enrutado por host. Los certificados (Let's Encrypt, sin correo de contacto) se renuevan solos
+# y se guardan en el volumen edge-datos.
+
+(entorno) {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+	handle /api/* {
+		reverse_proxy {args[0]}-api:8000
+	}
+	handle {
+		reverse_proxy {args[0]}-web:8080
+	}
+	log {
+		output stdout
+		format console
+	}
+}
+
+{$DOMINIO_UAT} {
+	import entorno uat
+}
+
+{$DOMINIO_PROD} {
+	import entorno prod
+}

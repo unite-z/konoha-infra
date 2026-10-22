@@ -1,0 +1,44 @@
+name: sincronizar-host
+
+# Copia compose/ y scripts/ a /opt/konoha/infra en la EC2 y actualiza el Caddy de borde.
+# Los stacks de UAT y prod no se reinician: toman los cambios en su siguiente despliegue.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'compose/**'
+      - 'scripts/**'
+  workflow_dispatch:
+
+concurrency:
+  group: sincronizar-host
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  sincronizar:
+    if: vars.DESPLIEGUE_ACTIVO == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      HOST: ${{ vars.SSH_HOST }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: clave SSH
+        env:
+          SSH_KEY_DEPLOY: ${{ secrets.SSH_KEY_DEPLOY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY_DEPLOY" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          if ! ssh -o ConnectTimeout=15 "deploy@$HOST" true; then
+            echo "::error::La EC2 no responde por SSH. ¿Está arrancado el Learner Lab?"
+            exit 1
+          fi
+      - name: copiar compose y scripts
+        run: rsync -az --delete compose scripts "deploy@$HOST:/opt/konoha/infra/"
+      - name: actualizar el borde
+        run: ssh "deploy@$HOST" /opt/konoha/infra/scripts/levantar-edge.sh
