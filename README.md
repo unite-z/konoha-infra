@@ -28,6 +28,7 @@ Navegador ─HTTPS─► edge (Caddy) ─┬─ uat.<ip>.sslip.io ─► uat-web
 
 ## Por dónde empezar
 
+- Guía para personas y agentes: [AGENTS.md](AGENTS.md).
 - Normas del equipo: [docs/estandares/](docs/estandares/README.md).
 - Decisiones: [docs/adr/](docs/adr/README.md).
 - Procedimientos: [docs/runbooks/](docs/runbooks/).

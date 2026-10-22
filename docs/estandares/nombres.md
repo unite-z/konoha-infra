@@ -41,8 +41,8 @@ Las impone el lenguaje o la herramienta. Fuera de esta lista no hay más.
 | Identificadores de Terraform | snake_case (convención de HCL y tflint) | `aws_instance.app`, `variable "tipo_instancia"` |
 | Claves JSON de la API | camelCase (ver `api.md` del backend) | `fechaInicio` |
 | Variables de entorno | SCREAMING_SNAKE_CASE | `S3_PREFIX`, `GEMINI_API_KEY` |
-| Variables y secrets de GitHub Actions | SCREAMING_SNAKE_CASE | `DESPLIEGUE_ACTIVO`, `SSH_HOST_UAT` |
-| Ficheros con nombre fijado | el fijado | `README.md`, `CLAUDE.md`, `CONTRIBUTING.md`, `SECURITY.md`, `CODEOWNERS`, `Dockerfile`, `.env.example`, `docker-compose.yml` |
+| Variables y secrets de GitHub Actions | SCREAMING_SNAKE_CASE | `DESPLIEGUE_ACTIVO`, `SSH_HOST` |
+| Ficheros con nombre fijado | el fijado | `README.md`, `AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md`, `SECURITY.md`, `CODEOWNERS`, `Dockerfile`, `.env.example`, `docker-compose.yml` |
 | Rutas fijadas por GitHub | las de GitHub | `.github/ISSUE_TEMPLATE/`, `.github/pull_request_template.md` |
 
 ## Cómo se comprueba
