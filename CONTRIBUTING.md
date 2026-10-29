@@ -37,6 +37,6 @@ Después:
 - No se editan migraciones ya fusionadas.
 - El backend comprueba los permisos; la interfaz solo oculta.
 - Nombres en kebab-case, salvo las excepciones de [nombres.md](docs/estandares/nombres.md).
-- No se fusiona en `main` el jueves antes de la reunión de las 18:00.
+- No se fusiona en `main` el jueves desde las 18:00 (hora de Lima), cuando empieza la reunión del equipo.
 
 Detalle completo en [git-y-prs.md](docs/estandares/git-y-prs.md).
