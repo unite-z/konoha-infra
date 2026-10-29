@@ -43,8 +43,8 @@ feat(AV-12): agrega registro de poda por ejemplar
 - Tamaño orientativo: menos de 400 líneas cambiadas sin contar tests ni ficheros generados. Si no, se parte.
 - Para fusionar hacen falta:
   - el check `ci-ok` en verde;
-  - una aprobación, que incluya a quien figure en `CODEOWNERS` para lo tocado;
   - las conversaciones resueltas.
+- Cada persona puede fusionar su propio PR. La revisión de otra persona (o de quien figure en `CODEOWNERS` para lo tocado) es recomendable, sobre todo si hay migraciones, permisos o cambios del contrato de la API, pero no obligatoria.
 - Se fusiona **solo con squash**. La rama se borra sola al fusionar.
 - Quien revisa comenta con intención: `bloqueante:` (hay que cambiarlo), `sugerencia:` o `pregunta:`.
 - Para deshacer algo ya fusionado: `git revert` en una rama nueva y PR. Nunca se reescribe `main`.
@@ -52,15 +52,16 @@ feat(AV-12): agrega registro de poda por ejemplar
 ## Calendario
 
 - Fusionar en `main` despliega en UAT automáticamente.
-- **No se fusiona en `main` el viernes antes de la reunión de las 15:30 con la sección.** UAT tiene que estar estable durante la reunión.
+- **No se fusiona en `main` el jueves antes de la reunión del equipo de las 18:00.** UAT tiene que estar estable durante la reunión.
 - La promoción a prod es manual (`promover-prod.yml` en `konoha-infra`) y la decide quien coordina la entrega.
 
 ## Reglas de `main`
 
-Definidas en `.github/rulesets/main.json` de cada repo:
+Definidas en `.github/rulesets/main.json` de cada repo (cómo se aplican en `.github/rulesets/README.md`):
 
 - sin push directo ni force push;
-- PR obligatorio con una aprobación y revisión de `CODEOWNERS`;
+- PR obligatorio, sin aprobación mínima: quien abre el PR puede fusionarlo;
+- conversaciones resueltas;
 - check `ci-ok` obligatorio;
 - historia lineal (solo squash).
 

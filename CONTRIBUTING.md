@@ -27,7 +27,7 @@ Después:
 
 1. Abre el PR, como borrador si aún no está listo. El título lleva el formato del commit.
 2. Rellena la plantilla.
-3. Espera `ci-ok` en verde y una aprobación.
+3. Espera `ci-ok` en verde. Pedir revisión a otra persona es recomendable, pero puedes fusionar tu propio PR.
 4. Fusiona con **squash**.
 
 ## Lo que no se negocia
@@ -37,6 +37,6 @@ Después:
 - No se editan migraciones ya fusionadas.
 - El backend comprueba los permisos; la interfaz solo oculta.
 - Nombres en kebab-case, salvo las excepciones de [nombres.md](docs/estandares/nombres.md).
-- No se fusiona en `main` el viernes antes de la reunión de las 15:30.
+- No se fusiona en `main` el jueves antes de la reunión de las 18:00.
 
 Detalle completo en [git-y-prs.md](docs/estandares/git-y-prs.md).

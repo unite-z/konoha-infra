@@ -28,7 +28,7 @@ La EC2 solo corre mientras la sesión del lab está abierta. Al cerrarla, AWS pa
 
 - Arranca el lab al menos 30 minutos antes y comprueba los dos health.
 - Revisa que prod corre la versión acordada (`desplegar.md`, «Qué corre en cada entorno»).
-- No fusiones en `main` el viernes antes de la reunión de las 15:30.
+- No fusiones en `main` el jueves antes de la reunión de las 18:00.
 
 ## Credenciales para Terraform (solo quien administra la infra)
 
