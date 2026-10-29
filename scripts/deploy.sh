@@ -17,8 +17,14 @@ dir="$KONOHA_DIR/$entorno"
 version="$dir/version.env"
 mkdir -p "$dir"
 
+# Cola: si otro despliegue del mismo entorno está en curso (por ejemplo, el del otro repo), se espera
+# su turno. La versión se lee después de conseguir el bloqueo, así que se parte de lo que dejó.
 exec 9>"$dir/.deploy.lock"
-flock -n 9 || error "Ya hay un despliegue en curso en $entorno."
+if ! flock -n 9; then
+  log "Hay otro despliegue en curso en $entorno: espero mi turno (máximo 10 minutos)."
+  flock -w 600 9 || error "El despliegue anterior en $entorno no ha terminado en 10 minutos."
+  log "Turno conseguido."
+fi
 
 api_actual=""
 web_actual=""
