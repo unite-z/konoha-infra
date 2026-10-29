@@ -32,6 +32,8 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       ENLACE: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
       - name: clave SSH
         env:
           SSH_KEY_DEPLOY: ${{ secrets.SSH_KEY_DEPLOY }}
@@ -66,6 +68,14 @@ jobs:
           echo "web=$WEB_SHA" >> "$GITHUB_OUTPUT"
           echo "Promoción a prod: api=$API_SHA web=$WEB_SHA" >> "$GITHUB_STEP_SUMMARY"
 
+      # Para saber qué tickets entran en prod con esta promoción (AV-238).
+      - name: versiones que hay en prod
+        id: previas
+        run: |
+          prod="$(ssh "deploy@$HOST" cat /opt/konoha/prod/version.env 2>/dev/null || true)"
+          echo "api=$(grep '^API_SHA=' <<< "$prod" | cut -d= -f2)" >> "$GITHUB_OUTPUT"
+          echo "web=$(grep '^WEB_SHA=' <<< "$prod" | cut -d= -f2)" >> "$GITHUB_OUTPUT"
+
       - name: registrar el deployment
         id: deployment
         env:
@@ -88,6 +98,17 @@ jobs:
           API_SHA: ${{ steps.versiones.outputs.api }}
           WEB_SHA: ${{ steps.versiones.outputs.web }}
         run: ssh "deploy@$HOST" "/opt/konoha/infra/scripts/deploy.sh prod ambos $API_SHA $WEB_SHA"
+
+      # Los tickets que llegan a prod pasan a Done en Linear. Un fallo aquí no tumba la promoción.
+      - name: tickets de Linear a Done
+        continue-on-error: true
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          API_PREVIO: ${{ steps.previas.outputs.api }}
+          WEB_PREVIO: ${{ steps.previas.outputs.web }}
+          API_NUEVO: ${{ steps.versiones.outputs.api }}
+          WEB_NUEVO: ${{ steps.versiones.outputs.web }}
+        run: .github/scripts/linear-a-done.sh
 
       - name: estado del deployment
         if: always() && steps.deployment.outputs.id != ''
