@@ -52,7 +52,7 @@ feat(AV-12): agrega registro de poda por ejemplar
 ## Calendario
 
 - Fusionar en `main` despliega en UAT automáticamente.
-- **No se fusiona en `main` el jueves antes de la reunión del equipo de las 18:00.** UAT tiene que estar estable durante la reunión.
+- **No se fusiona en `main` el jueves desde las 18:00 (hora de Lima), cuando empieza la reunión del equipo.** UAT tiene que estar estable durante la reunión. Antes de esa hora, el jueves se fusiona con normalidad.
 - La promoción a prod es manual (`promover-prod.yml` en `konoha-infra`) y la decide quien coordina la entrega.
 
 ## Reglas de `main`
