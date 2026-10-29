@@ -25,6 +25,7 @@ Si el lab está apagado, el workflow falla con «La EC2 no responde por SSH». A
 1. Comprueba UAT con la sección o con el equipo.
 2. `konoha-infra`, Actions, **promover-prod**, Run workflow. Deja los SHA vacíos para llevar exactamente lo que corre en UAT.
 3. El workflow rechaza cualquier combinación de api y web que no haya pasado con éxito por UAT.
+4. Si el despliegue sale bien, los tickets `AV-n` de los commits nuevos de backend y frontend que estén en «In Testing» o «In Review» pasan a Done en Linear (secret `LINEAR_API_KEY`). El resumen de la ejecución lista los movidos. Si Linear falla, solo avisa: la promoción no se deshace.
 
 ## Qué corre en cada entorno
 
