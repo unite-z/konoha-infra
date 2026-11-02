@@ -42,7 +42,8 @@ runs:
         fi
 
         echo "::notice::La EC2 no responde por SSH: se abre el Learner Lab desde $REPO_LAB."
-        gh workflow run abrir-lab.yml -R "$REPO_LAB"
+        # API REST directa: `gh workflow run` consulta la rama por defecto y LAB_TOKEN solo tiene permiso de Actions.
+        gh api -X POST "repos/$REPO_LAB/actions/workflows/abrir-lab.yml/dispatches" -f ref=main
 
         fin=$((SECONDS + ESPERA))
         until responde; do
