@@ -30,7 +30,7 @@ Si la EC2 no responde, `deploy-uat` y `promover-prod` abren el lab solos (ADR 00
 
 - Revisa el run de `abrir-lab.yml` en `Makusoku/abrir-learner-lab`. Si falló el login o un selector, adjunta una captura.
 - Abre el lab a mano y relanza el workflow que falló.
-- `LAB_TOKEN` caduca: el dueño del lab crea otro (Settings, Developer settings, Fine-grained tokens; solo ese repo, permiso Actions de lectura y escritura) y lo guarda con `gh secret set LAB_TOKEN --org unite-z --repos konoha-backend,konoha-frontend,konoha-infra`.
+- `LAB_TOKEN` caduca: el dueño del lab crea otro (Settings, Developer settings, Fine-grained tokens; solo ese repo, permiso Actions de lectura y escritura) y lo guarda en cada repo con `read -rs T; for r in konoha-backend konoha-frontend konoha-infra; do gh secret set LAB_TOKEN -R unite-z/$r --body "$T"; done; unset T`.
 
 ## Antes de una sustentación o de la reunión con la sección
 
