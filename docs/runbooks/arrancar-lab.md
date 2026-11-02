@@ -24,6 +24,14 @@ La EC2 solo corre mientras la sesión del lab está abierta. Al cerrarla, AWS pa
 4. La sesión dura unas 4 horas. Pulsar **Start Lab** otra vez reinicia el contador sin parar nada.
 5. Los backups de `@reboot` corren a los 10 minutos del arranque.
 
+## Apertura automática al desplegar
+
+Si la EC2 no responde, `deploy-uat` y `promover-prod` abren el lab solos (ADR 0006) y esperan hasta 12 minutos. Si falla:
+
+- Revisa el run de `abrir-lab.yml` en `Makusoku/abrir-learner-lab`. Si falló el login o un selector, adjunta una captura.
+- Abre el lab a mano y relanza el workflow que falló.
+- `LAB_TOKEN` caduca: el dueño del lab crea otro (Settings, Developer settings, Fine-grained tokens; solo ese repo, permiso Actions de lectura y escritura) y lo guarda en cada repo con `read -rs T; for r in konoha-backend konoha-frontend konoha-infra; do gh secret set LAB_TOKEN -R unite-z/$r --body "$T"; done; unset T`.
+
 ## Antes de una sustentación o de la reunión con la sección
 
 - Arranca el lab al menos 30 minutos antes y comprueba los dos health.

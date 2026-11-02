@@ -26,13 +26,20 @@ permissions:
 jobs:
   promover:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    # Hasta 13 minutos de espera si hay que abrir el Learner Lab.
+    timeout-minutes: 33
     env:
       HOST: ${{ vars.SSH_HOST }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       ENLACE: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: asegurar lab
+        uses: ./.github/actions/asegurar-lab
+        with:
+          host: ${{ vars.SSH_HOST }}
+          token-lab: ${{ secrets.LAB_TOKEN }}
 
       - name: clave SSH
         env:
@@ -43,7 +50,7 @@ jobs:
           printf '%s\n' "$SSH_KEY_DEPLOY" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
           printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
           if ! ssh -o ConnectTimeout=15 "deploy@$HOST" true; then
-            echo "::error::La EC2 no responde por SSH. ¿Está arrancado el Learner Lab?"
+            echo "::error::La EC2 responde, pero el SSH de deploy falla."
             exit 1
           fi
 

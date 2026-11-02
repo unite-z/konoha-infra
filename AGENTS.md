@@ -51,7 +51,7 @@ En el PR, CI comprueba además el título, la rama, los nombres de fichero, los 
 ## Reglas no negociables
 
 - **Nada de `aws_iam_*`** en Terraform: en el Learner Lab no se pueden crear roles. Se usa `LabInstanceProfile`.
-- **Ninguna credencial de AWS en GitHub Actions.** El despliegue va por SSH con el usuario `deploy`.
+- **Ninguna credencial de AWS en GitHub Actions.** El despliegue va por SSH con el usuario `deploy`. Para abrir el lab solo se usa `LAB_TOKEN` (ADR 0006).
 - **Nunca se versiona el `.tfstate`**, ni `.tfvars` con valores reales, ni los `.env` de los stacks.
 - **`plan` y `apply` contra la cuenta del lab, solo con aprobación** de quien coordina.
 - Prod solo recibe imágenes ya desplegadas con éxito en UAT, identificadas por SHA. Nunca `:latest`.
