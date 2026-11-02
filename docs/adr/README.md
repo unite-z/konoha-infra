@@ -21,3 +21,4 @@ Cuando la decisión es cara de deshacer o afecta a más de un módulo: stack, fo
 | [0003](0003-despliegue-ec2-compose.md) | Despliegue en una EC2 con Docker Compose | aceptado |
 | [0004](0004-formato-errores-problemdetail.md) | Formato de errores con ProblemDetail | propuesto |
 | [0005](0005-claves-json-snake-case.md) | Claves JSON de la API en snake_case | aceptado |
+| [0006](0006-abrir-learner-lab-desde-despliegues.md) | Los despliegues abren el Learner Lab si está cerrado | aceptado |

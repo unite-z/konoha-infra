@@ -1,0 +1,57 @@
+name: asegurar-lab
+description: >-
+  Comprueba que la EC2 responde por SSH. Si no responde, pide al repo privado
+  del dueño del Learner Lab que lo abra y espera a que la EC2 arranque (ADR 0006).
+
+inputs:
+  host:
+    description: IP o nombre de la EC2.
+    required: true
+  token-lab:
+    description: Token que solo puede lanzar el workflow abrir-lab del repo del lab (secreto LAB_TOKEN).
+    required: false
+    default: ""
+  repo-lab:
+    description: Repo privado que abre el Learner Lab.
+    required: false
+    default: Makusoku/abrir-learner-lab
+  espera:
+    description: Segundos máximos de espera a que la EC2 responda.
+    required: false
+    default: "720"
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        HOST: ${{ inputs.host }}
+        GH_TOKEN: ${{ inputs.token-lab }}
+        REPO_LAB: ${{ inputs.repo-lab }}
+        ESPERA: ${{ inputs.espera }}
+      run: |
+        responde() { timeout 5 bash -c ": </dev/tcp/$HOST/22" 2>/dev/null; }
+
+        if responde; then
+          echo "La EC2 responde por SSH."
+          exit 0
+        fi
+        if [[ -z "$GH_TOKEN" ]]; then
+          echo "::error::La EC2 no responde por SSH y falta LAB_TOKEN para abrir el Learner Lab. Ábrelo y relanza este workflow."
+          exit 1
+        fi
+
+        echo "::notice::La EC2 no responde por SSH: se abre el Learner Lab desde $REPO_LAB."
+        gh workflow run abrir-lab.yml -R "$REPO_LAB"
+
+        fin=$((SECONDS + ESPERA))
+        until responde; do
+          if (( SECONDS >= fin )); then
+            echo "::error::La EC2 sigue sin responder tras ${ESPERA} s. Revisa el run de abrir-lab en $REPO_LAB o abre el lab a mano y relanza este workflow."
+            exit 1
+          fi
+          sleep 15
+        done
+        # sshd acepta conexiones antes de que Docker termine de levantar los contenedores.
+        sleep 30
+        echo "La EC2 responde tras $SECONDS s."
