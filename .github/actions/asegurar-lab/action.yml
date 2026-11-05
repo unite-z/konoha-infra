@@ -19,6 +19,14 @@ inputs:
     description: Segundos máximos de espera a que la EC2 responda.
     required: false
     default: "720"
+  intentos:
+    description: Veces que se intenta lanzar abrir-lab si la API de GitHub falla.
+    required: false
+    default: "5"
+  pausa:
+    description: Segundos entre un intento fallido de lanzar abrir-lab y el siguiente.
+    required: false
+    default: "60"
 
 runs:
   using: composite
@@ -29,6 +37,8 @@ runs:
         GH_TOKEN: ${{ inputs.token-lab }}
         REPO_LAB: ${{ inputs.repo-lab }}
         ESPERA: ${{ inputs.espera }}
+        INTENTOS: ${{ inputs.intentos }}
+        PAUSA: ${{ inputs.pausa }}
       run: |
         responde() { timeout 5 bash -c ": </dev/tcp/$HOST/22" 2>/dev/null; }
 
@@ -43,7 +53,23 @@ runs:
 
         echo "::notice::La EC2 no responde por SSH: se abre el Learner Lab desde $REPO_LAB."
         # API REST directa: `gh workflow run` consulta la rama por defecto y LAB_TOKEN solo tiene permiso de Actions.
-        gh api -X POST "repos/$REPO_LAB/actions/workflows/abrir-lab.yml/dispatches" -f ref=main
+        # La API a veces responde con un error vacío («unexpected end of JSON input», 05/11/2026): se reintenta
+        # y se deja en el log el código HTTP de cada fallo para saber la causa.
+        lanzar() { gh api -X POST "repos/$REPO_LAB/actions/workflows/abrir-lab.yml/dispatches" -f ref=main --include 2>&1; }
+        for (( intento = 1; intento <= INTENTOS; intento++ )); do
+          if salida=$(lanzar); then
+            echo "abrir-lab lanzado (intento $intento de $INTENTOS)."
+            break
+          fi
+          estado=$(printf '%s\n' "$salida" | grep -m1 -E '^HTTP/' || true)
+          detalle=$(printf '%s\n' "$salida" | tail -n 1)
+          echo "::warning::No se pudo lanzar abrir-lab (intento $intento de $INTENTOS): ${estado:-sin respuesta HTTP} · $detalle"
+          if (( intento == INTENTOS )); then
+            echo "::error::La API de GitHub no lanzó abrir-lab tras $INTENTOS intentos. Mira https://www.githubstatus.com, abre el lab a mano o relanza este workflow."
+            exit 1
+          fi
+          sleep "$PAUSA"
+        done
 
         fin=$((SECONDS + ESPERA))
         until responde; do
