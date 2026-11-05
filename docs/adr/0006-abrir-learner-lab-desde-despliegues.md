@@ -14,7 +14,7 @@ Los 11 miembros de la organización `unite-z` son administradores, así que un s
 
 Un repo privado en la cuenta personal del dueño del lab (`Makusoku/abrir-learner-lab`) guarda su usuario y contraseña de AWS Academy y tiene un workflow, `abrir-lab.yml`, que entra con Playwright y pulsa **Start Lab**.
 
-Los repos del equipo solo guardan `LAB_TOKEN`, un token de grano fino que únicamente puede lanzar ese workflow. La acción `.github/actions/asegurar-lab` comprueba el SSH antes de desplegar; si la EC2 no responde, lanza `abrir-lab.yml` y espera hasta 12 minutos.
+Los repos del equipo solo guardan `LAB_TOKEN`, un token de grano fino que únicamente puede lanzar ese workflow. La acción `.github/actions/asegurar-lab` comprueba el SSH antes de desplegar; si la EC2 no responde, lanza `abrir-lab.yml` (con hasta 5 intentos, uno por minuto, si la API de GitHub falla) y espera hasta 12 minutos.
 
 La regla «ninguna credencial de AWS en GitHub Actions» se mantiene para los repos del equipo: ni la contraseña ni credenciales de AWS entran en ellos.
 

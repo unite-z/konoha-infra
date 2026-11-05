@@ -28,6 +28,7 @@ La EC2 solo corre mientras la sesión del lab está abierta. Al cerrarla, AWS pa
 
 Si la EC2 no responde, `deploy-uat` y `promover-prod` abren el lab solos (ADR 0006) y esperan hasta 12 minutos. Si falla:
 
+- Si en el run del deploy pone «No se pudo lanzar abrir-lab» con el código HTTP: la API de GitHub no aceptó la petición. La acción lo reintenta 5 veces, una por minuto; si fallan todas, mira https://www.githubstatus.com y relanza el workflow (`gh run rerun <id> --failed`).
 - Revisa el run de `abrir-lab.yml` en `Makusoku/abrir-learner-lab`. Si falló el login o un selector, adjunta una captura.
 - Abre el lab a mano y relanza el workflow que falló.
 - `LAB_TOKEN` caduca: el dueño del lab crea otro (Settings, Developer settings, Fine-grained tokens; solo ese repo, permiso Actions de lectura y escritura) y lo guarda en cada repo con `read -rs T; for r in konoha-backend konoha-frontend konoha-infra; do gh secret set LAB_TOKEN -R unite-z/$r --body "$T"; done; unset T`.
