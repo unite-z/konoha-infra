@@ -1,7 +1,7 @@
 name: promover-prod
 
 # Lleva a prod una versión de api y web que ya ha pasado por UAT, sin construir nada.
-# deploy.sh hace pg_dump a S3, levanta, verifica el digest y el smoke test, y vuelve atrás si algo falla.
+# deploy.sh hace el respaldo conjunto (base y adjuntos, con manifiesto y checksums) a S3, levanta, verifica el digest y el smoke test, y vuelve atrás si algo falla.
 # Cada promoción queda registrada como deployment del entorno prod (pestaña Environments de este repo).
 on:
   workflow_dispatch:

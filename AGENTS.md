@@ -55,7 +55,7 @@ En el PR, CI comprueba además el título, la rama, los nombres de fichero, los 
 - **Nunca se versiona el `.tfstate`**, ni `.tfvars` con valores reales, ni los `.env` de los stacks.
 - **`plan` y `apply` contra la cuenta del lab, solo con aprobación** de quien coordina.
 - Prod solo recibe imágenes ya desplegadas con éxito en UAT, identificadas por SHA. Nunca `:latest`.
-- Antes de cualquier despliegue a prod: `pg_dump` a S3. Sin backup no hay despliegue.
+- Antes de cualquier despliegue a prod: respaldo conjunto de base y adjuntos a S3, verificado con checksums. Sin respaldo completo no hay despliegue.
 - Las migraciones tienen que ser compatibles con la versión anterior de la api (expand/contract), porque la vuelta atrás solo cambia la imagen.
 - UAT y prod comparten la EC2: no subas los límites de memoria de un entorno sin revisar la suma total (ADR 0003).
 - Nada de cambios a mano en el host que no estén en este repo. Todo entra por PR y `sincronizar-host.yml`.
