@@ -79,5 +79,6 @@ La cuenta se desactiva y se pierde todo, incluidos los backups de S3. Por eso, u
 
 ```sh
 aws s3 ls s3://<bucket>/backups/prod/ | tail -1
-aws s3 cp s3://<bucket>/backups/prod/<fichero>.dump .
+aws s3 cp s3://<bucket>/backups/prod/<fecha>/ ./<fecha>/ --recursive
+# y comprueba la copia: scripts/verificar-backup.sh ./<fecha> prod
 ```

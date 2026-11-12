@@ -11,7 +11,7 @@
 
 `deploy.sh`:
 
-1. Descarga las imágenes. En prod, además, hace `pg_dump` a S3.
+1. Descarga las imágenes. En prod, además, hace el respaldo conjunto (base y adjuntos) a S3 y lo verifica; si falla, no despliega.
 2. Levanta el entorno y espera a que los contenedores estén sanos.
 3. Comprueba que corren el digest esperado.
 4. Pasa el smoke test.

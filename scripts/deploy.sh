@@ -58,7 +58,7 @@ if [[ "${SIN_PULL:-0}" != "1" ]]; then
 fi
 
 if [[ "$entorno" == "prod" && "${SIN_BACKUP:-0}" != "1" ]]; then
-  "$(dirname "$0")/backup.sh" prod || error "El backup previo ha fallado: no se despliega sin backup."
+  "$(dirname "$0")/backup.sh" prod || error "El respaldo previo (base y adjuntos) ha fallado o no es íntegro: no se despliega sin respaldo completo."
 fi
 
 if [[ -f "$version" ]]; then cp "$version" "$dir/version.env.anterior"; fi
