@@ -54,3 +54,18 @@ avisar_fallo() {
       -d "$(jq -n --arg c "$mensaje" '{content: $c}')" "$DEPLOY_WEBHOOK_URL" >/dev/null || true
   fi
 }
+
+# Descarga un respaldo (directorio backups/<entorno>/<fecha>) de S3 a un directorio local.
+# Con BACKUP_DESTINO_LOCAL lo copia de ahí (pruebas sin S3).
+descargar_backup() {
+  local clave="$1" destino="$2"
+  mkdir -p "$destino"
+  if [[ -n "${BACKUP_DESTINO_LOCAL:-}" ]]; then
+    [[ -d "$BACKUP_DESTINO_LOCAL/$clave" ]] || error "No existe el respaldo $BACKUP_DESTINO_LOCAL/$clave."
+    cp "$BACKUP_DESTINO_LOCAL/$clave"/* "$destino/"
+  else
+    docker run --rm -e AWS_REGION="${AWS_REGION:-us-east-1}" -v "$destino":/b amazon/aws-cli:2.22.35 \
+      s3 cp "s3://${BUCKET:?Falta BUCKET}/$clave/" /b --recursive --only-show-errors \
+      || error "No se ha podido descargar $clave."
+  fi
+}
