@@ -11,6 +11,9 @@ export KONOHA_DIR
 log() { printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >&2; }
 error() { log "ERROR: $*"; exit 1; }
 
+# sha256sum en Linux; shasum en macOS (pruebas locales).
+if command -v sha256sum >/dev/null 2>&1; then SHA256=(sha256sum); else SHA256=(shasum -a 256); fi
+
 validar_entorno() {
   case "${1:-}" in
     uat | prod) ;;
