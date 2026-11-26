@@ -84,4 +84,40 @@ compose "$entorno" up -d --remove-orphans --wait --wait-timeout 300 || fallo "lo
 
 # Historial de despliegues correctos: promover-prod.yml solo acepta versiones que han pasado por UAT.
 printf '%s api=%s web=%s\n' "$(date -Iseconds)" "$api_nueva" "$web_nueva" >> "$dir/historial"
+
+# Borra las imágenes de api y web que ya no hacen falta: comparten disco con las bases de UAT y prod.
+# Conserva en cada entorno la versión actual y la anterior (la que usa volver-atras.sh). docker image rm
+# sin -f no borra las que use algún contenedor. Si el otro entorno está desplegando, no se toca nada:
+# podría borrarle la imagen que acaba de descargar.
+limpiar_imagenes() {
+  local otro=prod conservar=" " f componente clave imagen borradas=0
+  [[ "$entorno" == "prod" ]] && otro=uat
+  mkdir -p "$KONOHA_DIR/$otro"
+  exec 8>"$KONOHA_DIR/$otro/.deploy.lock"
+  if ! flock -n 8; then
+    log "Aviso: hay un despliegue en curso en $otro; la limpieza de imágenes queda para el siguiente."
+    exec 8>&-
+    return 0
+  fi
+  for f in "$KONOHA_DIR"/{uat,prod}/version.env{,.anterior}; do
+    [[ -f "$f" ]] || continue
+    for componente in api web; do
+      clave="$(tr '[:lower:]' '[:upper:]' <<< "$componente")_SHA"
+      conservar+="konoha-$componente:$(leer_version "$f" "$clave") "
+    done
+  done
+  while read -r imagen; do
+    [[ "$conservar" == *" ${imagen##*/} "* ]] && continue
+    if docker image rm "$imagen" >/dev/null 2>&1; then
+      borradas=$((borradas + 1))
+    else
+      log "Aviso: no se ha podido borrar $imagen (¿la usa algún contenedor?)."
+    fi
+  done < <(docker image ls --format '{{.Repository}}:{{.Tag}}' | grep -E '/konoha-(api|web):' | grep -v ':<none>$')
+  docker image prune -f >/dev/null
+  exec 8>&-
+  log "Limpieza de imágenes: $borradas borradas. Disco: $(df --output=pcent / | tail -n 1 | tr -d ' ') usado."
+}
+limpiar_imagenes || log "Aviso: la limpieza de imágenes ha fallado; el despliegue es correcto. Revisa el disco a mano."
+
 log "Despliegue en $entorno correcto."
