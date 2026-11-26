@@ -15,6 +15,7 @@
 2. Levanta el entorno y espera a que los contenedores estén sanos.
 3. Comprueba que corren el digest esperado.
 4. Pasa el smoke test.
+5. Borra las imágenes `konoha-api` y `konoha-web` del host salvo la actual y la anterior de cada entorno (la de la vuelta atrás). Si el otro entorno está desplegando, o la limpieza falla, solo avisa en el log.
 
 Si algo falla, vuelve sola a la versión anterior y el workflow avisa en Discord.
 
@@ -93,3 +94,5 @@ Con la EC2 creada (`arrancar-lab.md`):
 ## Imágenes antiguas
 
 `limpiar-imagenes.yml` (backend y frontend) conserva las 10 versiones más recientes de cada imagen cada lunes. Si una ejecución falla por permisos: en el paquete de GHCR, Package settings, Manage Actions access, da al repo el rol **Admin**.
+
+En la EC2 las borra `deploy.sh` tras cada despliegue correcto (paso 5). Para ver cuánto ocupan: `ssh deploy@<ip> 'df -h / && docker system df'`.
